@@ -1,13 +1,4 @@
-//----------------------------------------------------------------------------------------------------------------------------
-// Tarefas
-//----------------------------------------------------------------------------------------------------------------------------
-
-let tarefas = [
-    { id: 1, texto: 'Estudar Node', prioridade: 'alta', coluna: 'afazer' },
-    { id: 2, texto: 'Criar API', prioridade: 'alta', coluna: 'andamento' },
-    { id: 3, texto: 'Testar Postman',prioridade: 'media', coluna: 'concluido' },
-];
-let proximoId = 4
+const tarefasModel = require('../models/tarefas.model');
 
 const tarefasController = {
 
@@ -17,9 +8,10 @@ const tarefasController = {
 
     listar(req, res) {
         const {coluna} = req.query;
-        let resultado = tarefas;
-        if (coluna) resultado = tarefas.filter(t => t.coluna === coluna);
-        res.json(resultado)
+        const resultado = coluna
+            ? tarefasModel.listarPorColuna(coluna)
+            : tarefasModel.listar();
+        res.json(resultado);
     },
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -29,7 +21,7 @@ const tarefasController = {
 
     buscarPorId(req, res) {
         const id = parseInt(req.params.id);
-        const tarefa = tarefas.find(t => t.id === id);
+        const tarefa = tarefasModel.buscar(id)
         if (!tarefa) return res.status(404).json({ erro: 'Tarefa não encontrada'});
         res.json(tarefa)
     },
@@ -41,12 +33,11 @@ const tarefasController = {
     criar(req, res) {
         const { texto, prioridade, coluna } = req.body;
         if (!texto) return res.status (400).json({erro: 'Texto obrigatório'});
-        const novaTarefa = { 
-            id: proximoId++, texto,
-            prioridade: prioridade || 'media',
-            coluna: coluna || 'afazer'     
-        }
-        tarefas.push(novaTarefa);
+        const novaTarefa = tarefasModel.adicionar ({
+            texto,
+            prioridade,
+            coluna 
+        });
         res.status(201).json(novaTarefa);
     },
 
@@ -57,12 +48,14 @@ const tarefasController = {
     atualizar(req, res) {
         const id = Number(req.params.id);
         const { texto, prioridade, coluna, cidade } = req.body;
-        const indice = tarefas.findIndex(t => t.id === id);
-        if (indice === -1) {
+        const tarefaAtualizada = tarefasModel.atualizar(id, {
+            texto,
+            prioridade,
+            coluna
+        });
+        if (!tarefaAtualizada) {
             return res.status(404).json({ erro: 'Tarefa não encontrada' });
         }
-        const tarefaAtualizada = { id, texto, prioridade, coluna, cidade };
-        tarefas[indice] = tarefaAtualizada;
         res.json(tarefaAtualizada);
         },
         
@@ -73,11 +66,10 @@ const tarefasController = {
 
     remover(req, res) {
         const id = parseInt(req.params.id);
-        const idx = tarefas.findIndex(t => t.id === id);
-        if (idx === -1) {
+        const removida = tarefasModel.remover(id);
+        if (!removida) {
             return res.status(404).json({ erro: 'Tarefa não encontrada' });
         }
-        const removida = tarefas.splice(idx, 1)[0]
         res.json({ mensagem: 'Tarefa removida com sucesso', tarefa: removida });
     },
 
@@ -87,7 +79,7 @@ const tarefasController = {
 
     estatisticas(req, res) {
         const {coluna} = req.query;
-        const base = coluna ? tarefas.filter(t => t.coluna === coluna) : tarefas;
+        const base = coluna ? tarefasModel.listarPorColuna(coluna) : tarefasModel.listar();
         const porColuna = {
             afazer: base.filter(t => t.coluna === 'afazer').length,
             andamento: base.filter(t => t.coluna === 'andamento').length,

@@ -24,9 +24,9 @@ const usuariosControler = {
 //----------------------------------------------------------------------------------------------------------------------------
 
     buscarPorId(req, res) {
-        const id = pareseInt(req.params.id);
+        const id = parseInt(req.params.id);
         const usuario = usuarios.find(t => t.id === id);
-        if (!usuario) return res.status(404).json({ erro: 'usuario não encontrada'});
+        if (!usuario) return res.status(404).json({ erro: 'usuario não encontrado'});
         res.json(usuario)
     },
 

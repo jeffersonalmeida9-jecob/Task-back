@@ -1,36 +1,35 @@
 const express = require('express');
 const router = express.Router ();
-const usuariosControler = require('../controllers/usuarios.controller')
-
+const projetosControler = require('../controllers/projetos.controller');
 
 //----------------------------------------------------------------------------------------------------------------------------
 // ROTA 1 - Listar todos os usuários
 //----------------------------------------------------------------------------------------------------------------------------
 
-router.get('/', usuariosControler.listar)
+router.get('/', projetosControler.listar)
 
 //----------------------------------------------------------------------------------------------------------------------------
 // ROTA 2 — Buscar usuário por ID
 //----------------------------------------------------------------------------------------------------------------------------
 
-router.get('/:id', usuariosControler.buscarPorId)
+router.get('/:id', projetosControler.buscarPorId)
 
 //----------------------------------------------------------------------------------------------------------------------------
 //ROTA 3 — Adicionar usuário 
 //----------------------------------------------------------------------------------------------------------------------------
 
-router.post('/', usuariosControler.criar)
+router.post('/', projetosControler.criar)
 
 //----------------------------------------------------------------------------------------------------------------------------
 // ROTA 4 — Atualizar usuário
 //----------------------------------------------------------------------------------------------------------------------------
 
-router.put('/:id', usuariosControler.atualizar)
+router.put('/:id', projetosControler.atualizar)
 
 //----------------------------------------------------------------------------------------------------------------------------
 // ROTA 5 — Deletar usuarios
 //----------------------------------------------------------------------------------------------------------------------------
 
-router.delete('/:id', usuariosControler.remover)
+router.delete('/:id', projetosControler.remover)
 
 module.exports = router;
