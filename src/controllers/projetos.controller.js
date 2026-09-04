@@ -6,7 +6,7 @@ const projetosControler = {
 //----------------------------------------------------------------------------------------------------------------------------
 
     listar(req, res) {
-        const resultado = projetosModel.listar
+        const resultado = projetosModel.listar ()
         res.json(resultado)
     },
 
@@ -41,15 +41,14 @@ const projetosControler = {
     atualizar(req, res) {
         const id = Number(req.params.id);
         const { descriçao, ativo } = req.body;
-        if (!projetoAtualizado) {
-            return res.status(404).json({ erro: 'Projeto não encontrado' });
-        }
         const projetoAtualizado = { 
             id,
             descriçao,
             ativo, 
         };
-        projetos[indice] = projetoAtualizado;
+        if (!projetoAtualizado) {
+            return res.status(404).json({ erro: 'Projeto não encontrado' });
+        }
         res.json(projetoAtualizado);
         },
 

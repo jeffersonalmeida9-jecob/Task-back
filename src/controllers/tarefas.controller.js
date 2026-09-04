@@ -1,4 +1,5 @@
 const tarefasModel = require('../models/tarefas.model');
+const usuariosModel = require('../models/usuario.model')
 
 const tarefasController = {
 
@@ -7,7 +8,7 @@ const tarefasController = {
 //----------------------------------------------------------------------------------------------------------------------------
 
     listar(req, res) {
-        const {coluna} = req.query;
+        const {coluna, usuarioId} = req.query;
         const resultado = coluna
             ? tarefasModel.listarPorColuna(coluna)
             : tarefasModel.listar();
@@ -31,12 +32,27 @@ const tarefasController = {
 //----------------------------------------------------------------------------------------------------------------------------
 
     criar(req, res) {
-        const { texto, prioridade, coluna } = req.body;
+        const { texto, prioridade, coluna, usuarioId } = req.body;
+        if (
+            coluna !== 'afazer' 
+            && coluna !== 'andamento' 
+            && coluna !== 'concluida') 
+            return res.status (400).json({erro: 'Coluna inválida. Use: afazer, andamento ou concluida'})
+        if (
+            prioridade !== 'alta' 
+            && prioridade !==  'media' 
+            && prioridade !== 'baixa')
+            return res.status (400).json({erro: 'Prioridade inválida. Use: alta, media ou baixa'})
         if (!texto) return res.status (400).json({erro: 'Texto obrigatório'});
+        const tarefas_andameto = tarefasModel.listar().filter(t => t.coluna === 'andamento')
+        if (tarefas_andameto.length >= 2) return res.status(400).json({erro: 'Limite de 2 tarefas em andamento por usuário atingido'})
+        const id_u = usuariosModel.buscar(usuarioId)
+        if (!id_u) return res.status (400).json({erro: 'Usuário não encontrado'})
         const novaTarefa = tarefasModel.adicionar ({
             texto,
             prioridade,
-            coluna 
+            coluna,
+            usuarioId
         });
         res.status(201).json(novaTarefa);
     },
@@ -47,17 +63,29 @@ const tarefasController = {
 
     atualizar(req, res) {
         const id = Number(req.params.id);
-        const { texto, prioridade, coluna, cidade } = req.body;
-        const tarefaAtualizada = tarefasModel.atualizar(id, {
-            texto,
-            prioridade,
-            coluna
-        });
-        if (!tarefaAtualizada) {
-            return res.status(404).json({ erro: 'Tarefa não encontrada' });
+        const { texto, prioridade, coluna, usuarioId, cidade } = req.body;
+        let tarefaAtualizada
+        if (coluna === "concluida") {
+            tarefaAtualizada = tarefasModel.atualizar(id, {
+                texto,
+                prioridade,
+                coluna,
+                usuarioId,
+                concluidaEm: new Date().toISOString()
+            });
+        }    else {
+            tarefaAtualizada = tarefasModel.atualizar(id, {
+                texto,
+                prioridade,
+                coluna,
+                usuarioId,
+            });
         }
-        res.json(tarefaAtualizada);
-        },
+            if (!tarefaAtualizada) {
+                return res.status(404).json({ erro: 'Tarefa não encontrada' });
+            }
+            res.json(tarefaAtualizada);  
+    },
         
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -79,13 +107,7 @@ const tarefasController = {
 
     estatisticas(req, res) {
         const {coluna} = req.query;
-        const base = coluna ? tarefasModel.listarPorColuna(coluna) : tarefasModel.listar();
-        const porColuna = {
-            afazer: base.filter(t => t.coluna === 'afazer').length,
-            andamento: base.filter(t => t.coluna === 'andamento').length,
-            concluido: base.filter(t => t.coluna === 'concluido').length,
-        };
-        res.json({total: base.length, porColuna})
+        res.json(coluna ? tarefasModel.listar() : tarefasModel.estatisticas())
     },
 };
 

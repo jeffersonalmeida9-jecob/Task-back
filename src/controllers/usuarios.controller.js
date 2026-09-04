@@ -1,13 +1,5 @@
-//----------------------------------------------------------------------------------------------------------------------------
-// Usuários
-//----------------------------------------------------------------------------------------------------------------------------
-
-let usuarios = [
-    { id: 1, nome: 'Admin', email: 'adimin@gmail.com',},
-    { id: 2, nome: 'Jeff', email: 'jeff@gmail.com'},
-    { id: 3, nome: 'Jecob',email: 'jecob@gmail.com'},
-];
-let proximoId = 4
+const usuarioModel = require("../models/usuario.model");
+const tarefaModel = require("../models/tarefas.model")
 
 const usuariosControler = {
 
@@ -16,7 +8,8 @@ const usuariosControler = {
 //----------------------------------------------------------------------------------------------------------------------------
 
     listar(req, res) {
-        res.json(usuarios)
+        const resultado = usuarioModel.listar ()
+        res.json(resultado)
     },
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -25,7 +18,7 @@ const usuariosControler = {
 
     buscarPorId(req, res) {
         const id = parseInt(req.params.id);
-        const usuario = usuarios.find(t => t.id === id);
+        const usuario = usuarioModel.buscar(id);
         if (!usuario) return res.status(404).json({ erro: 'usuario não encontrado'});
         res.json(usuario)
     },
@@ -36,12 +29,10 @@ const usuariosControler = {
 
     criar(req, res) {
         const { nome, email,} = req.body;
-        const novoUsuario = {
-            id: proximoId++, 
-            nome: nome,
-            email: email || '',
-        };
-        usuarios.push(novoUsuario);
+        const novoUsuario = usuarioModel.adicionar ({
+            nome,
+            email
+        });
         res.status(201).json(novoUsuario);
     },
 
@@ -52,12 +43,13 @@ const usuariosControler = {
     atualizar(req, res) {
         const id = Number(req.params.id);
         const { nome, email } = req.body;
-        const indice = usuarios.findIndex(t => t.id === id);
-        if (indice === -1) {
+        const usuarioAtualizado = usuarioModel.atualizar(id, {
+            nome,
+            email
+        });
+        if (!usuarioAtualizado) {
             return res.status(404).json({ erro: 'Usuário não encontrado' });
         }
-        const usuarioAtualizado = { id, nome, email, };
-        usuarios[indice] = usuarioAtualizado;
         res.json(usuarioAtualizado);
         },
 
@@ -66,12 +58,15 @@ const usuariosControler = {
 //----------------------------------------------------------------------------------------------------------------------------
 
     remover(req, res) {
-        const id = Number(req.params.id);
-        const usuario = usuarios.find(t => t.id === id);
-        if (!usuario) {
-            return res.status(404).json({ erro: 'Usuário não encontrado' });
+        const id = parseInt(req.params.id);
+        const usuario = usuarioModel.remover(id);
+        const usuario_t = tarefaModel.listar().filter(t => t.usuarioId === id)
+        if (usuario_t) {
+            return res.status(400).json({erro: 'Usuário possui tarefas. Remova as tarefas antes.'})
         }
-        usuarios = usuarios.filter(t => t.id !== id);
+        if (!usuario) {
+            return res.status(404).json({ erro: 'Usuário não encontrado', usuario_t });
+        }
         res.json({ mensagem: 'Usuario removido com sucesso', id });
     },
 }
