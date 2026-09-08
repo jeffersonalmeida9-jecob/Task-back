@@ -12,7 +12,10 @@ const tarefasController = {
         const resultado = coluna
             ? tarefasModel.listarPorColuna(coluna)
             : tarefasModel.listar();
-        res.json(resultado);
+        const resultadoFiltrado = usuarioId
+            ? resultado.filter(t => t.usuarioId === parseInt(usuarioId))
+            : resultado
+        res.json(resultadoFiltrado);
     },
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -32,7 +35,7 @@ const tarefasController = {
 //----------------------------------------------------------------------------------------------------------------------------
 
     criar(req, res) {
-        const { texto, prioridade, coluna, usuarioId } = req.body;
+        const { texto, prioridade, coluna, usuarioId, projetoId} = req.body;
         if (
             coluna !== 'afazer' 
             && coluna !== 'andamento' 
@@ -43,6 +46,7 @@ const tarefasController = {
             && prioridade !==  'media' 
             && prioridade !== 'baixa')
             return res.status (400).json({erro: 'Prioridade inválida. Use: alta, media ou baixa'})
+        if (!projetoId) return res.status (400).json({erro: 'Projeto obrigatório'})
         if (!texto) return res.status (400).json({erro: 'Texto obrigatório'});
         const tarefas_andameto = tarefasModel.listar().filter(t => t.coluna === 'andamento')
         if (tarefas_andameto.length >= 2) return res.status(400).json({erro: 'Limite de 2 tarefas em andamento por usuário atingido'})
@@ -97,6 +101,9 @@ const tarefasController = {
         const removida = tarefasModel.remover(id);
         if (!removida) {
             return res.status(404).json({ erro: 'Tarefa não encontrada' });
+        }
+        if (projetoId) {
+            return res.status(400).json({erro: 'Projeto possui tarefas associadas. Remova as tarefas antes.'})
         }
         res.json({ mensagem: 'Tarefa removida com sucesso', tarefa: removida });
     },
