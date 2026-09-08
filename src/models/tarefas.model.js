@@ -27,7 +27,7 @@ module.exports = {
         }
         tarefas.push(novaTarefa);
         return novaTarefa
-    },
+     },
 
     atualizar: (id, dados) => {
         const indice = tarefas.findIndex(t => t.id === id);

@@ -22,7 +22,6 @@ const tarefasController = {
 //  2 — Buscar tarefa por ID
 //----------------------------------------------------------------------------------------------------------------------------
 
-
     buscarPorId(req, res) {
         const id = parseInt(req.params.id);
         const tarefa = tarefasModel.buscar(id)
@@ -37,19 +36,23 @@ const tarefasController = {
     criar(req, res) {
         const { texto, prioridade, coluna, usuarioId, projetoId} = req.body;
         if (
-            coluna !== 'afazer' 
-            && coluna !== 'andamento' 
-            && coluna !== 'concluida') 
+            coluna !== 'afazer' &&
+            coluna !== 'andamento' && 
+            coluna !== 'concluida') 
             return res.status (400).json({erro: 'Coluna inválida. Use: afazer, andamento ou concluida'})
         if (
-            prioridade !== 'alta' 
-            && prioridade !==  'media' 
-            && prioridade !== 'baixa')
+            prioridade !== 'alta' && 
+            prioridade !==  'media' && 
+            prioridade !== 'baixa')
             return res.status (400).json({erro: 'Prioridade inválida. Use: alta, media ou baixa'})
+
         if (!projetoId) return res.status (400).json({erro: 'Projeto obrigatório'})
+
         if (!texto) return res.status (400).json({erro: 'Texto obrigatório'});
+
         const tarefas_andameto = tarefasModel.listar().filter(t => t.coluna === 'andamento')
         if (tarefas_andameto.length >= 2) return res.status(400).json({erro: 'Limite de 2 tarefas em andamento por usuário atingido'})
+
         const id_u = usuariosModel.buscar(usuarioId)
         if (!id_u) return res.status (400).json({erro: 'Usuário não encontrado'})
         const novaTarefa = tarefasModel.adicionar ({
@@ -91,7 +94,6 @@ const tarefasController = {
             res.json(tarefaAtualizada);  
     },
         
-
 //----------------------------------------------------------------------------------------------------------------------------
 //  6 — Deletar tarefa
 //----------------------------------------------------------------------------------------------------------------------------
@@ -102,7 +104,8 @@ const tarefasController = {
         if (!removida) {
             return res.status(404).json({ erro: 'Tarefa não encontrada' });
         }
-        if (projetoId) {
+        const {projetoId} = req.body;
+        if (projetoId !== null) {
             return res.status(400).json({erro: 'Projeto possui tarefas associadas. Remova as tarefas antes.'})
         }
         res.json({ mensagem: 'Tarefa removida com sucesso', tarefa: removida });
