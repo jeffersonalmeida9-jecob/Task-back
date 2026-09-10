@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router ();
 const tarefasController = require('../controllers/tarefas.controller')
+const validar = require('../middlewares/validar');
+const schemas = require('../middlewares/schemas');
 
 //----------------------------------------------------------------------------------------------------------------------------
 // ROTA 1 — Listar todas
@@ -40,13 +42,17 @@ router.get('/', (req, res) => {
 // ROTA 5 — Criar tarefa
 //----------------------------------------------------------------------------------------------------------------------------
 
-router.post('/', tarefasController.criar);
+router.post('/',
+    validar(schemas.tarefa),
+    tarefasController.criar);
 
 //----------------------------------------------------------------------------------------------------------------------------
 // ROTA 6 — Atualizar tarefa
 //----------------------------------------------------------------------------------------------------------------------------
 
-router.put('/:id', tarefasController.atualizar);
+router.put('/:id',
+    validar(schemas.tarefa),
+    tarefasController.atualizar);
 
 //----------------------------------------------------------------------------------------------------------------------------
 // ROTA 7 — Deletar tarefa

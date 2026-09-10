@@ -35,20 +35,8 @@ const tarefasController = {
 
     criar(req, res) {
         const { texto, prioridade, coluna, usuarioId, projetoId} = req.body;
-        if (
-            coluna !== 'afazer' &&
-            coluna !== 'andamento' && 
-            coluna !== 'concluida') 
-            return res.status (400).json({erro: 'Coluna inválida. Use: afazer, andamento ou concluida'})
-        if (
-            prioridade !== 'alta' && 
-            prioridade !==  'media' && 
-            prioridade !== 'baixa')
-            return res.status (400).json({erro: 'Prioridade inválida. Use: alta, media ou baixa'})
 
         if (!projetoId) return res.status (400).json({erro: 'Projeto obrigatório'})
-
-        if (!texto) return res.status (400).json({erro: 'Texto obrigatório'});
 
         const tarefas_andameto = tarefasModel.listar().filter(t => t.coluna === 'andamento')
         if (tarefas_andameto.length >= 2) return res.status(400).json({erro: 'Limite de 2 tarefas em andamento por usuário atingido'})

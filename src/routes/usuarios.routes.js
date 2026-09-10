@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router ();
-const usuariosControler = require('../controllers/usuarios.controller')
+const usuariosControler = require('../controllers/usuarios.controller');
+const validar = require('../middlewares/validar');
+const schemas = require('../middlewares/schemas');
 
 
 //----------------------------------------------------------------------------------------------------------------------------
@@ -19,13 +21,17 @@ router.get('/:id', usuariosControler.buscarPorId)
 //ROTA 3 — Adicionar usuário 
 //----------------------------------------------------------------------------------------------------------------------------
 
-router.post('/', usuariosControler.criar)
+router.post('/',
+    validar(schemas.usuario),
+    usuariosControler.criar)
 
 //----------------------------------------------------------------------------------------------------------------------------
 // ROTA 4 — Atualizar usuário
 //----------------------------------------------------------------------------------------------------------------------------
 
-router.put('/:id', usuariosControler.atualizar)
+router.put('/:id',
+    validar(schemas.usuario),
+    usuariosControler.atualizar)
 
 //----------------------------------------------------------------------------------------------------------------------------
 // ROTA 5 — Deletar usuarios
