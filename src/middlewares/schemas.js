@@ -17,4 +17,4 @@ const schemas = {
         descricao: {obrigatorio: false, tipo: 'string', maxLenght: 200},
     },
 };
-module.exports = schemas
+module.exports = schemas    
