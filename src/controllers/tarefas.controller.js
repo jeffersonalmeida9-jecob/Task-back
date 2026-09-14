@@ -8,7 +8,9 @@ const tarefasController = {
 //----------------------------------------------------------------------------------------------------------------------------
 
     listar(req, res) {
-        const {coluna, usuarioId} = req.query;
+        const {coluna} = req.query;
+        const usuarioId = req.usuario.id;
+
         const resultado = coluna
             ? tarefasModel.listarPorColuna(coluna)
             : tarefasModel.listar();
@@ -34,7 +36,8 @@ const tarefasController = {
 //----------------------------------------------------------------------------------------------------------------------------
 
     criar(req, res) {
-        const { texto, prioridade, coluna, usuarioId, projetoId} = req.body;
+        const { texto, prioridade, coluna, projetoId} = req.body;
+        const usuarioId = req.usuario.id;
 
         if (!projetoId) return res.status (400).json({erro: 'Projeto obrigatório'})
 
@@ -58,7 +61,8 @@ const tarefasController = {
 
     atualizar(req, res) {
         const id = Number(req.params.id);
-        const { texto, prioridade, coluna, usuarioId, cidade } = req.body;
+        const { texto, prioridade, coluna, cidade } = req.body;
+        const usuarioId = req.usuario.id;
         let tarefaAtualizada
         if (coluna === "concluida") {
             tarefaAtualizada = tarefasModel.atualizar(id, {

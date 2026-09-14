@@ -17,7 +17,6 @@ const authController = {
             console.log(senha);
         return res.status(401).json({ erro: 'Credenciais inválidas' });
         }
-
         
         const token = jwt.sign(
             { id: usuario.id, nome: usuario.nome },
