@@ -6,7 +6,7 @@ let usuarios = [
     { id: 1, nome: 'Admin', email: 'adimin@gmail.com', senha: "15483"},
     { id: 2, nome: 'Jeff', email: 'jeff@gmail.com', senha: "15487"},
     { id: 3, nome: 'Jecob',email: 'jecob@gmail.com', senha: "15489"},
-    { id: 4, nome: 'Alice',email: 'alice@email.com', senha: "123456"},
+    { id: 4, nome: 'admin',email: 'admin@email.com', senha: "1234"},
 ];
 let proximoId = 4
 

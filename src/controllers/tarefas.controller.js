@@ -39,7 +39,7 @@ const tarefasController = {
         const { texto, prioridade, coluna, projetoId} = req.body;
         const usuarioId = req.usuario.id;
 
-        if (!projetoId) return res.status (400).json({erro: 'Projeto obrigatório'})
+        //if (!projetoId) return res.status (400).json({erro: 'Projeto obrigatório'})
 
         const tarefas_andameto = tarefasModel.listar().filter(t => t.coluna === 'andamento')
         if (tarefas_andameto.length >= 2) return res.status(400).json({erro: 'Limite de 2 tarefas em andamento por usuário atingido'})
@@ -96,10 +96,10 @@ const tarefasController = {
         if (!removida) {
             return res.status(404).json({ erro: 'Tarefa não encontrada' });
         }
-        const {projetoId} = req.body;
-        if (projetoId !== null) {
-            return res.status(400).json({erro: 'Projeto possui tarefas associadas. Remova as tarefas antes.'})
-        }
+        //const {projetoId} = req.body;
+        //if (projetoId !== null) {
+        //    return res.status(400).json({erro: 'Projeto possui tarefas associadas. Remova as tarefas antes.'})
+        //}
         res.json({ mensagem: 'Tarefa removida com sucesso', tarefa: removida });
     },
 
