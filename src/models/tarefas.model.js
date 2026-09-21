@@ -30,7 +30,7 @@ module.exports = {
      },
 
     atualizar: (id, dados) => {
-        const indice = tarefas.findIndex(t => t.id === id);
+        const indice = tarefas.findIndex(t => Number(t.id) === Number(id));
         if (indice === -1) {
             return null;
         }

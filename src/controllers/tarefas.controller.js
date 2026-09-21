@@ -41,7 +41,7 @@ const tarefasController = {
 
         //if (!projetoId) return res.status (400).json({erro: 'Projeto obrigatório'})
 
-        const tarefas_andameto = tarefasModel.listar().filter(t => t.coluna === 'andamento')
+        const tarefas_andameto = tarefasModel.listar().filter(t => t.coluna === 'andamento' && t.usuarioId === usuarioId);
         if (tarefas_andameto.length >= 2) return res.status(400).json({erro: 'Limite de 2 tarefas em andamento por usuário atingido'})
 
         const id_u = usuariosModel.buscar(usuarioId)
@@ -63,6 +63,21 @@ const tarefasController = {
         const id = Number(req.params.id);
         const { texto, prioridade, coluna, cidade } = req.body;
         const usuarioId = req.usuario.id;
+
+        if (coluna === "andamento") {
+        const tarefasAndamento = tarefasModel
+            .listar()
+            .filter(t => t.coluna === "andamento" 
+                && t.usuarioId === usuarioId
+                && t.id !== id
+            );
+
+            if (tarefasAndamento.length >= 2) {
+                window.alert('Limite de 2 tarefas em andamento por usuário atingido');
+                return res.status(400).json({erro: 'Limite de 2 tarefas em andamento por usuário atingido'})
+            }
+        }
+
         let tarefaAtualizada
         if (coluna === "concluida") {
             tarefaAtualizada = tarefasModel.atualizar(id, {
